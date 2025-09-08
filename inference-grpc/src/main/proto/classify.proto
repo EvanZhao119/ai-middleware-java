@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package classify;
+
+option java_multiple_files = true;
+option java_package = "org.estech.classify";
+option java_outer_classname = "ClassifyProto";
+
+service Classifier {
+  rpc Predict (ImageRequest) returns (PredictionResponse) {}
+}
+
+message ImageRequest {
+  bytes image = 1;
+  int32 topk = 2;
+}
+
+message Prediction {
+  string label = 1;
+  float prob = 2;
+}
+
+message PredictionResponse {
+  repeated Prediction topk = 1;
+}

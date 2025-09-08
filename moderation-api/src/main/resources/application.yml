@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,threaddump
+  endpoint:
+    health:
+      show-details: never

@@ -1,0 +1,14 @@
+spring:
+  main:
+    web-application-type: reactive
+  codec:
+    max-in-memory-size: 10MB
+
+server:
+  port: 8080
+
+management:
+  endpoints.web.exposure.include: health,info,metrics,prometheus
+  endpoint.health.show-details: always
+  endpoint.prometheus.enabled: true
+  metrics.tags.application: moderation-flux
