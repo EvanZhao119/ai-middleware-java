@@ -1,0 +1,7 @@
+name: dev-gateway
+providers:
+  flux: "http://localhost:8081/compute"
+  api: "http://localhost:8082/compute"
+  jni: "http://localhost:8082/compute?impl=jni"
+  grpc: "http://localhost:8082/compute?impl=grpc"
+  python: "http://localhost:5000/compute"

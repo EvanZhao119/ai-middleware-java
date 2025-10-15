@@ -13,6 +13,7 @@
         <module>moderation-flux</module>
         <module>moderation-api</module>
         <module>inference-grpc</module>
+        <module>gateway</module>
         <!--        <module>inference-grpc</module>-->
 <!--        <module>experiments/djl-resnet</module>-->
     </modules>

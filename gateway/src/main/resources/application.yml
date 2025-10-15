@@ -1,0 +1,14 @@
+server:
+  port: 8080
+spring:
+  main:
+    web-application-type: reactive
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
