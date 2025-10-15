@@ -1,6 +1,5 @@
-package org.estech.moderation.config;
+package org.estech.flux.config;
 
-import ai.djl.ModelException;
 import ai.djl.modality.Classifications;
 import ai.djl.modality.cv.ImageFactory;
 import ai.djl.ndarray.NDArray;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,7 +25,6 @@ import java.util.List;
 
 @Configuration
 public class NsfwModelConfig {
-
     @Bean
     public ZooModel<NDList, Classifications> nsfwModel() throws Exception {
 //        Path modelPath = Path.of("src/main/resources/models/");

@@ -1,26 +1,25 @@
-package org.estech.moderation.service;
+package org.estech.flux.service;
 
 import ai.djl.inference.Predictor;
 import ai.djl.modality.Classifications;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.repository.zoo.ZooModel;
-import org.estech.moderation.config.NsfwModelConfig;
-import org.estech.moderation.dto.ModerationResult;
-import org.springframework.stereotype.Service;
-import org.springframework.http.codec.multipart.FilePart;
+import org.estech.flux.config.NsfwModelConfig;
+import org.estech.flux.dto.ModerationResult;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-
-import javax.imageio.ImageIO;
 
 @Service
 public class ModerationFluxService {

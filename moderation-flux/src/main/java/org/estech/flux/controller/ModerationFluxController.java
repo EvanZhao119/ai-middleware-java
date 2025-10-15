@@ -1,13 +1,17 @@
-package org.estech.moderation.controller;
+package org.estech.flux.controller;
 
-import io.micrometer.core.instrument.MeterRegistry;
+
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import org.estech.moderation.dto.ModerationResult;
-import org.estech.moderation.service.ModerationFluxService;
+import org.estech.flux.dto.ModerationResult;
+import org.estech.flux.service.ModerationFluxService;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/flux/moderation")
 @RequiredArgsConstructor
 public class ModerationFluxController {
-
     private final ModerationFluxService service;
     private final MeterRegistry meterRegistry;
 

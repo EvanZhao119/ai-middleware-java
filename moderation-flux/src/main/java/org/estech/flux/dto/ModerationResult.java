@@ -1,7 +1,8 @@
-package org.estech.moderation.dto;
+package org.estech.flux.dto;
+
+import ai.djl.modality.Classifications;
 
 import java.util.Map;
-import ai.djl.modality.Classifications;
 
 public record ModerationResult(String label, double score, Map<String, Double> probs) {
 
