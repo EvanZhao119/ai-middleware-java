@@ -1,14 +1,21 @@
 server:
   port: 8080
+
 spring:
+  codec:
+    max-in-memory-size: 20MB
   main:
     web-application-type: reactive
+
+gateway:
+  rate-limit: 100
+  timeout-seconds: 30
+  jwt-secret: "my-super-secret-key"
+  retry-attempts: 2
+  circuit-failure-threshold: 3
+
 management:
   endpoints:
     web:
       exposure:
-        include: prometheus
-  metrics:
-    export:
-      prometheus:
-        enabled: true
+        include: ["prometheus"]
