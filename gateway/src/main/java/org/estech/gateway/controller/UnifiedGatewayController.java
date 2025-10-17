@@ -6,6 +6,10 @@ import org.estech.gateway.model.ComputeRequest;
 import org.estech.gateway.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.codec.multipart.FormFieldPart;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -134,6 +138,18 @@ public class UnifiedGatewayController {
     private Mono<String> handleMultipart(ServerWebExchange exchange, String traceId) {
         return exchange.getMultipartData()
                 .flatMap(parts -> {
+                    MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+                    parts.forEach((name, partList) -> {
+                        for (Part part : partList) {
+                            if (part instanceof FilePart filePart) {
+                                builder.part(name, filePart);
+                            } else if (part instanceof FormFieldPart fieldPart) {
+                                builder.part(name, fieldPart.value());
+                            }
+                        }
+                    });
+
                     org.springframework.http.codec.multipart.FormFieldPart implPart =
                             (org.springframework.http.codec.multipart.FormFieldPart) parts.getFirst("impl");
                     org.springframework.http.codec.multipart.FormFieldPart pathPart =
@@ -141,9 +157,6 @@ public class UnifiedGatewayController {
 
                     String impl = implPart != null ? implPart.value() : null;
                     String path = pathPart != null ? pathPart.value() : null;
-
-                    org.springframework.http.codec.multipart.FilePart file =
-                            (org.springframework.http.codec.multipart.FilePart) parts.getFirst("file");
 
                     if (impl == null || path == null) {
                         return Mono.error(new IllegalArgumentException("Missing impl or path field"));
@@ -160,12 +173,11 @@ public class UnifiedGatewayController {
 
                     log.info("[traceId={}] Forwarding file → {}", traceId, targetUrl);
 
-                    // 使用 WebClient 进行文件转发
                     return webClient.post()
                             .uri(targetUrl)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .header("X-Trace-Id", traceId)
-                            .body(BodyInserters.fromMultipartData("file", file))
+                            .body(BodyInserters.fromMultipartData(builder.build()))
                             .retrieve()
                             .bodyToMono(String.class)
                             .timeout(Duration.ofSeconds(timeoutSeconds));
