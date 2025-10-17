@@ -1,3 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+
 grpc:
   server:
     host: localhost

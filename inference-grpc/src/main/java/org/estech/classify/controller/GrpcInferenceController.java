@@ -2,10 +2,12 @@ package org.estech.classify.controller;
 
 import org.estech.classify.service.GrpcInferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/inference")
+@RequestMapping("/rpc/inference")
 public class GrpcInferenceController {
 
     private final GrpcInferenceService grpcInferenceService;
@@ -15,10 +17,10 @@ public class GrpcInferenceController {
         this.grpcInferenceService = grpcInferenceService;
     }
 
-    @GetMapping("/predict")
+    @PostMapping(value = "/predict", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String predict(
-            @RequestParam("imagePath") String imagePath,
+            @RequestPart("file") MultipartFile file,
             @RequestParam(name = "topk", defaultValue = "5") int topk) throws Exception {
-        return grpcInferenceService.predict(imagePath, topk);
+        return grpcInferenceService.predict(file, topk);
     }
 }

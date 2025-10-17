@@ -3,17 +3,21 @@ package org.estech.classify.client;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.estech.classify.ClassifierGrpc;
 import org.estech.classify.ImageRequest;
 import org.estech.classify.Prediction;
 import org.estech.classify.PredictionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Slf4j
 @Component
 public class GrpcClient {
 
@@ -28,12 +32,8 @@ public class GrpcClient {
         this.blockingStub = ClassifierGrpc.newBlockingStub(channel);
     }
 
-    private static byte[] readAllBytes(String path) throws IOException {
-        return Files.readAllBytes(Paths.get(path));
-    }
-
-    public String predict(String imagePath, int topk) throws IOException {
-        byte[] data = readAllBytes(imagePath);
+    public String predict(MultipartFile file, int topk) throws IOException {
+        byte[] data = file.getBytes();
 
         ImageRequest request = ImageRequest.newBuilder()
                 .setImage(com.google.protobuf.ByteString.copyFrom(data))
@@ -46,7 +46,8 @@ public class GrpcClient {
                     .withDeadlineAfter(10, java.util.concurrent.TimeUnit.SECONDS)
                     .predict(request);
         } catch (StatusRuntimeException e) {
-            return null;
+            log.error("gRPC predict failed: {}", e.getStatus(), e);
+            throw e; // or return structured error
         }
 
         StringBuilder sb = new StringBuilder();
@@ -56,7 +57,10 @@ public class GrpcClient {
         return sb.toString();
     }
 
+    @PreDestroy
     public void shutdown() {
-        channel.shutdown();
+        if (channel != null && !channel.isShutdown()) {
+            channel.shutdownNow();
+        }
     }
 }

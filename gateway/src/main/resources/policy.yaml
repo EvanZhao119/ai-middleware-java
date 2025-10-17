@@ -1,4 +1,4 @@
 routes:
   flux: http://localhost:8081/flux
   api: http://localhost:8082/api
-  python: http://localhost:5000/py
+  rpc: http://localhost:8083/rpc
