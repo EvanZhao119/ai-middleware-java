@@ -1,4 +1,4 @@
-package org.estech.moderation.config;
+package org.estech.api.config;
 
 import ai.djl.inference.Predictor;
 import ai.djl.modality.Classifications;

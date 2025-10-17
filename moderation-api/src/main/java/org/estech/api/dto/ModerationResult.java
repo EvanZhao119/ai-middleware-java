@@ -1,4 +1,4 @@
-package org.estech.moderation.dto;
+package org.estech.api.dto;
 
 import java.util.Map;
 

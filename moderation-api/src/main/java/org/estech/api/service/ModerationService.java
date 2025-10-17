@@ -1,12 +1,12 @@
-package org.estech.moderation.service;
+package org.estech.api.service;
 
 import ai.djl.inference.Predictor;
 import ai.djl.modality.Classifications;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.repository.zoo.ZooModel;
-import org.estech.moderation.config.NsfwModelConfig;
-import org.estech.moderation.dto.ModerationResult;
+import org.estech.api.config.NsfwModelConfig;
+import org.estech.api.dto.ModerationResult;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

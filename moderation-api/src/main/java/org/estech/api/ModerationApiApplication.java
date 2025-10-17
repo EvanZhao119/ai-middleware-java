@@ -1,11 +1,11 @@
-package org.estech.moderation;
+package org.estech.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ModerationApplication {
+public class ModerationApiApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ModerationApplication.class, args);
+        SpringApplication.run(ModerationApiApplication.class, args);
     }
 }

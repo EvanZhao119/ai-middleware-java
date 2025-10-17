@@ -1,16 +1,13 @@
-package org.estech.moderation.controller;
+package org.estech.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.estech.moderation.dto.ModerationResult;
-import org.estech.moderation.service.ModerationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.estech.api.dto.ModerationResult;
+import org.estech.api.service.ModerationService;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Tag(name = "NSFW")

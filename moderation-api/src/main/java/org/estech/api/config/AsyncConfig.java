@@ -1,5 +1,5 @@
 // config/AsyncConfig.java
-package org.estech.moderation.config;
+package org.estech.api.config;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
