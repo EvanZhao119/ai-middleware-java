@@ -20,7 +20,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot BOM: 统一管理 Spring Boot 版本 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -29,7 +28,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- DJL 版本统一 -->
             <dependency>
                 <groupId>ai.djl</groupId>
                 <artifactId>api</artifactId>

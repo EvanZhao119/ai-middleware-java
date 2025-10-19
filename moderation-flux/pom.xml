@@ -18,7 +18,7 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- DJL + ONNX (版本号由父 POM 统一管理) -->
+        <!-- DJL + ONNX  -->
         <dependency>
             <groupId>ai.djl</groupId>
             <artifactId>api</artifactId>
@@ -28,7 +28,6 @@
             <artifactId>onnxruntime-engine</artifactId>
         </dependency>
 
-        <!-- 监控 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
