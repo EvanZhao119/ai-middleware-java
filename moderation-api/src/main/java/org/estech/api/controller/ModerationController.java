@@ -35,4 +35,9 @@ public class ModerationController {
         return service.classifyAsync(file);
     }
 
+    @PostMapping("/native")
+    public ModerationResult classifyNative(@RequestParam("file") MultipartFile file) throws Exception {
+        return service.classifyNative(file);
+    }
+
 }

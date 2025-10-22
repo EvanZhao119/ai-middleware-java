@@ -4,9 +4,13 @@ import ai.djl.inference.Predictor;
 import ai.djl.modality.Classifications;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
+import ai.djl.ndarray.NDManager;
+import ai.djl.ndarray.types.DataType;
+import ai.djl.ndarray.types.Shape;
 import ai.djl.repository.zoo.ZooModel;
 import org.estech.api.config.NsfwModelConfig;
 import org.estech.api.dto.ModerationResult;
+import org.estech.api.jni.NativeImageOps;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,8 +36,6 @@ public class ModerationService {
         try (InputStream in = file.getInputStream();
              Predictor<NDList, Classifications> predictor = model.newPredictor()) {
 
-            long start = System.nanoTime();
-
             BufferedImage img = ImageIO.read(in);
             NDArray nd = NsfwModelConfig.preprocess(img, model.getNDManager());
             NDList input = new NDList(nd);
@@ -43,12 +46,33 @@ public class ModerationService {
             Map<String, Double> probs = new LinkedHashMap<>();
             out.items().forEach(i -> probs.put(i.getClassName(), i.getProbability()));
 
-            long end = System.nanoTime();
-            long durationMs = (end - start) / 1_000_000;
+            return new ModerationResult(best.getClassName(), best.getProbability(), probs);
+        }
+    }
 
-            System.out.println("[NSFW] Predict: " + best.getClassName() + " (" + best.getProbability() + ")");
-            System.out.println("[NSFW] Time: " + durationMs + " ms");
+    public ModerationResult classifyNative(MultipartFile file) throws Exception {
+        try (Predictor<NDList, Classifications> predictor = model.newPredictor()) {
 
+            byte[] bytes = file.getBytes();
+            ByteBuffer encoded = ByteBuffer.allocateDirect(bytes.length);
+            encoded.put(bytes);
+            encoded.flip();
+
+            NDManager manager = model.getNDManager();
+
+            ByteBuffer chw = NativeImageOps.preprocessToCHW(encoded, 224, 224,
+                    0.485f, 0.456f, 0.406f,
+                    0.229f, 0.224f, 0.225f);
+            NDArray nd = manager.create(chw.asFloatBuffer(), new Shape(1, 3, 224, 224), DataType.FLOAT32);
+            NativeImageOps.freeBuffer(chw);
+
+            NDList input = new NDList(nd);
+            Classifications out = predictor.predict(input);
+
+            Map<String, Double> probs = new LinkedHashMap<>();
+            out.topK(5).forEach(c -> probs.put(c.getClassName(), c.getProbability()));
+
+            var best = out.best();
             return new ModerationResult(best.getClassName(), best.getProbability(), probs);
         }
     }

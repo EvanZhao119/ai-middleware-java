@@ -39,12 +39,30 @@
         <dependency>
             <groupId>ai.djl</groupId>
             <artifactId>api</artifactId>
+            <version>0.32.0</version>
         </dependency>
-
-        <!-- ONNX Runtime Engine -->
+        <!-- DJL ONNX Runtime Engine -->
         <dependency>
             <groupId>ai.djl.onnxruntime</groupId>
             <artifactId>onnxruntime-engine</artifactId>
+            <version>0.32.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+
+        <!-- DJL Model Zoo (for Criteria loading) -->
+        <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>model-zoo</artifactId>
+            <version>0.32.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
         </dependency>
 
         <!-- Test -->
@@ -53,9 +71,29 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>**/*.dylib</include>
+                    <include>**/*.so</include>
+                    <include>**/*.dll</include>
+                    <include>**/*.onnx</include>
+                    <include>**/*.txt</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
