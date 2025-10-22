@@ -32,7 +32,7 @@ public class NativeImageOps {
 
     public static void freeBuffer(ByteBuffer buf) {
         if (!libraryLoaded) {
-            return; // 静默失败
+            return; 
         }
 
         if (buf != null && buf.isDirect()) {
