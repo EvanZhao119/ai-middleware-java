@@ -5,6 +5,7 @@ import ai.djl.modality.Classifications;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.repository.zoo.ZooModel;
+import lombok.extern.slf4j.Slf4j;
 import org.estech.flux.config.NsfwModelConfig;
 import org.estech.flux.dto.ModerationResult;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -21,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Service
 public class ModerationFluxService {
 
@@ -52,8 +54,8 @@ public class ModerationFluxService {
                         long end = System.nanoTime();
                         long durationMs = (end - start) / 1_000_000;
 
-                        System.out.println("[NSFW] Predict: " + best.getClassName() + " (" + best.getProbability() + ")");
-                        System.out.println("[NSFW] Time: " + durationMs + " ms");
+                        log.info("[NSFW] Predict: " + best.getClassName() + " (" + best.getProbability() + ")");
+                        log.info("[NSFW] Time: " + durationMs + " ms");
 
                         return new ModerationResult(best.getClassName(), best.getProbability(), probs);
                     }

@@ -1,4 +1,3 @@
-// config/AsyncConfig.java
 package org.estech.api.config;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;

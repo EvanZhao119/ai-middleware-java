@@ -2,6 +2,7 @@ package org.estech.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.estech.api.dto.ModerationResult;
 import org.estech.api.service.ModerationService;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Tag(name = "NSFW")
 @RestController
 @RequestMapping("/api/moderation")
@@ -24,14 +26,14 @@ public class ModerationController {
     @Operation(summary = "Synchorizing: Upload Image")
     @PostMapping(value = "/check", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ModerationResult check(@RequestPart("file") MultipartFile file) throws Exception {
-        System.out.println("/check request ============= ");
+        log.info("/check request =============");
         return service.classify(file);
     }
 
     @Operation(summary = "Asynchronizing: Upload Image")
     @PostMapping(value = "/check-async", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CompletableFuture<ModerationResult> checkAsync(@RequestPart("file") MultipartFile file) throws Exception {
-        System.out.println("/check-async request ============= ");
+        log.info("/check-async request =============");
         return service.classifyAsync(file);
     }
 
