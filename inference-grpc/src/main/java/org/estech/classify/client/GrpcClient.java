@@ -30,7 +30,7 @@ public class GrpcClient {
         this.blockingStub = ClassifierGrpc.newBlockingStub(channel);
     }
 
-    public String predict(MultipartFile file, int topk) throws IOException {
+    public PredictionResponse predict(MultipartFile file, int topk) throws IOException {
         byte[] data = file.getBytes();
 
         ImageRequest request = ImageRequest.newBuilder()
@@ -48,11 +48,7 @@ public class GrpcClient {
             throw e; // or return structured error
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (Prediction p : resp.getTopkList()) {
-            sb.append(String.format("%-30s %.4f%n", p.getLabel(), p.getProb()));
-        }
-        return sb.toString();
+        return resp;
     }
 
     @PreDestroy
