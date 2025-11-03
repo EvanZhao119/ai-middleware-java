@@ -3,7 +3,7 @@ package org.estech.classify.service;
 import org.estech.classify.Prediction;
 import org.estech.classify.PredictionResponse;
 import org.estech.classify.client.GrpcClient;
-import org.estech.classify.dto.ModerationResult;
+import org.estech.common.dto.ClassificationResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +19,7 @@ public class GrpcInferenceService {
         this.grpcClient = grpcClient;
     }
 
-    public ModerationResult predict(MultipartFile file, int topk) throws Exception {
+    public ClassificationResult predict(MultipartFile file, int topk) throws Exception {
         PredictionResponse resp = grpcClient.predict(file, topk);
         Map<String, Double> probs = new LinkedHashMap<>();
         for (Prediction p : resp.getTopkList()) {
@@ -30,6 +30,6 @@ public class GrpcInferenceService {
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow();
 
-        return new ModerationResult(best.getKey(), best.getValue(), probs);
+        return new ClassificationResult(best.getKey(), best.getValue(), probs);
     }
 }
