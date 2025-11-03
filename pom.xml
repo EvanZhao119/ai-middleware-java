@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>common</module>
+        <module>inference-model</module>
         <module>moderation-api</module>
         <module>inference-grpc</module>
         <module>gateway</module>
@@ -27,22 +29,22 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>ai.djl</groupId>-->
-<!--                <artifactId>bom</artifactId>-->
-<!--                <version>0.32.0</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
             <dependency>
                 <groupId>ai.djl</groupId>
-                <artifactId>api</artifactId>
-                <version>0.32.0</version>
+                <artifactId>bom</artifactId>
+                <version>${djl.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>ai.djl</groupId>-->
+<!--                <artifactId>api</artifactId>-->
+<!--                <version>0.32.0</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>ai.djl.onnxruntime</groupId>
                 <artifactId>onnxruntime-engine</artifactId>
-                <version>0.32.0</version>
+                <version>${djl.version}</version>
             </dependency>
 
             <dependency>
@@ -88,7 +90,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <djl.version>0.32.0</djl.version>
     </properties>
 
     <build>
