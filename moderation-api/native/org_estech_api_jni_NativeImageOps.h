@@ -10,18 +10,10 @@ extern "C" {
 /*
  * Class:     org_estech_api_jni_NativeImageOps
  * Method:    preprocessToCHWNative
- * Signature: (Ljava/nio/ByteBuffer;IIFFFFFF)Ljava/nio/ByteBuffer;
+ * Signature: (Ljava/nio/ByteBuffer;IIFFFFFF)[F
  */
-JNIEXPORT jobject JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHWNative
-  (JNIEnv *, jclass, jobject, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
-
-/*
- * Class:     org_estech_api_jni_NativeImageOps
- * Method:    freeBufferNative
- * Signature: (Ljava/nio/ByteBuffer;)V
- */
-JNIEXPORT void JNICALL Java_org_estech_api_jni_NativeImageOps_freeBufferNative
-  (JNIEnv *, jclass, jobject);
+JNIEXPORT jfloatArray JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHWNative
+  (JNIEnv *, jobject, jobject, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
 #ifdef __cplusplus
 }
