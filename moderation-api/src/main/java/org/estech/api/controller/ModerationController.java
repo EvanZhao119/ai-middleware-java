@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.estech.api.dto.ModerationResult;
 import org.estech.api.service.ModerationService;
+import org.estech.common.dto.ClassificationResult;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,22 +25,23 @@ public class ModerationController {
     }
 
     @Operation(summary = "Synchorizing: Upload Image")
-    @PostMapping(value = "/check", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ModerationResult check(@RequestPart("file") MultipartFile file) throws Exception {
-        log.info("/check request =============");
-        return service.classify(file);
+    @PostMapping(value = "/classify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ClassificationResult classify(@RequestPart("file") MultipartFile file,
+                                         @RequestParam(defaultValue = "5") int topK) throws Exception {
+        return service.classify(file, topK);
     }
 
     @Operation(summary = "Asynchronizing: Upload Image")
-    @PostMapping(value = "/check-async", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CompletableFuture<ModerationResult> checkAsync(@RequestPart("file") MultipartFile file) throws Exception {
-        log.info("/check-async request =============");
-        return service.classifyAsync(file);
+    @PostMapping(value = "/classify-async", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<ClassificationResult> classifyAsync(@RequestPart("file") MultipartFile file,
+                                                             @RequestParam(defaultValue = "5") int topK) throws Exception {
+        return service.classifyAsync(file, topK);
     }
 
     @PostMapping("/native")
-    public ModerationResult classifyNative(@RequestParam("file") MultipartFile file) throws Exception {
-        return service.classifyNative(file);
+    public ClassificationResult classifyNative(@RequestParam("file") MultipartFile file,
+                                           @RequestParam(defaultValue = "5") int topK) throws Exception {
+        return service.classifyNative(file, topK);
     }
 
 }

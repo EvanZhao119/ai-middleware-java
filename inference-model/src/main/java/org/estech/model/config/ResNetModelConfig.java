@@ -122,4 +122,79 @@ public class ResNetModelConfig {
 
         return ModelZoo.loadModel(criteria);
     }
+
+    /**
+     * 新增：用于 JNI/NDList 输入（不走 Translator）
+     */
+    public static ZooModel<NDList, Classifications> loadModelForNDList() throws Exception {
+        log.info("Loaded DJL Engine (NDList mode): {}", Engine.getInstance().getEngineName());
+
+        List<String> synset = loadSynset();
+        URL modelUrl = getModelUrl();
+        Path modelPath = Path.of(modelUrl.toURI());
+
+        Translator<NDList, Classifications> translator = new NoOpTranslator(synset);
+
+        Criteria<NDList, Classifications> criteria = Criteria.builder()
+                .setTypes(NDList.class, Classifications.class)
+                .optModelPath(modelPath)
+                .optTranslator(translator)
+                .optEngine("PyTorch")
+                .optDevice(Device.cpu())
+                .build();
+
+        return ModelZoo.loadModel(criteria);
+    }
+
+    private static List<String> loadSynset() throws IOException {
+        try (InputStream is = ResNetModelConfig.class
+                .getClassLoader()
+                .getResourceAsStream("models/resnet18/synset.txt")) {
+
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: models/resnet18/synset.txt");
+            }
+
+            return new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private static URL getModelUrl() throws FileNotFoundException {
+        URL modelUrl = ResNetModelConfig.class
+                .getClassLoader()
+                .getResource("models/resnet18/traced_resnet18.pt");
+        if (modelUrl == null) {
+            throw new FileNotFoundException("Resource not found: models/resnet18/traced_resnet18.pt");
+        }
+        return modelUrl;
+    }
+
+    /**
+     * 内部类：NDList 模式用的空 Translator，只负责返回输出
+     */
+    private static class NoOpTranslator implements Translator<NDList, Classifications> {
+        private final List<String> synset;
+
+        public NoOpTranslator(List<String> synset) {
+            this.synset = synset;
+        }
+
+        @Override
+        public NDList processInput(TranslatorContext ctx, NDList input) {
+            return input;
+        }
+
+        @Override
+        public Classifications processOutput(TranslatorContext ctx, NDList list) {
+            return new Classifications(synset, list.singletonOrThrow());
+        }
+
+        @Override
+        public Batchifier getBatchifier() {
+            return Batchifier.STACK;
+        }
+    }
+
 }

@@ -3,6 +3,8 @@ package org.estech.model.service;
 import ai.djl.modality.Classifications;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.ImageFactory;
+import ai.djl.ndarray.NDArray;
+import ai.djl.ndarray.NDList;
 import org.estech.common.dto.ClassificationResult;
 import org.estech.model.core.ImagePredictor;
 
@@ -29,6 +31,14 @@ public class ModelService {
     public ClassificationResult classify(InputStream stream, int topK) throws Exception {
         Image image = ImageFactory.getInstance().fromInputStream(stream);
         return predictInternal(image, topK);
+    }
+
+    public ClassificationResult classifyNDArray(NDArray nd, int topK) throws Exception {
+        try (ImagePredictor predictor = new ImagePredictor()) {
+            // 直接调用模型预测，不走 Translator.processInput()
+            Classifications result = predictor.predict(new NDList(nd));
+            return ClassificationResultAssembler.from(result, topK);
+        }
     }
 
     private ClassificationResult predictInternal(Image image, int topK) throws Exception {

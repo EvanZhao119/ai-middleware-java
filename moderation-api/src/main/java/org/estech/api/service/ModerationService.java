@@ -8,78 +8,89 @@ import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.DataType;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.repository.zoo.ZooModel;
+import lombok.extern.slf4j.Slf4j;
 import org.estech.api.config.NsfwModelConfig;
 import org.estech.api.dto.ModerationResult;
 import org.estech.api.jni.NativeImageOps;
+import org.estech.common.dto.ClassificationResult;
+import org.estech.model.service.ModelService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 @Service
+@Slf4j
 public class ModerationService {
 
-    private final ZooModel<NDList, Classifications> model;
+    private final ModelService modelService = new ModelService();
 
-    public ModerationService(ZooModel<NDList, Classifications> model) {
-        this.model = model;
-    }
+    public ClassificationResult classify(MultipartFile file, int topK) throws Exception {
+        try {
+            // 直接从 MultipartFile 读取字节数组
+            byte[] bytes = file.getBytes();
 
-    public ModerationResult classify(MultipartFile file) throws Exception {
-        try (InputStream in = file.getInputStream();
-             Predictor<NDList, Classifications> predictor = model.newPredictor()) {
+            // 调用底层模型服务
+            try (InputStream input = new ByteArrayInputStream(bytes)) {
+                return modelService.classify(input, topK);
+            }
 
-            BufferedImage img = ImageIO.read(in);
-            NDArray nd = NsfwModelConfig.preprocess(img, model.getNDManager());
-            NDList input = new NDList(nd);
-
-            Classifications out = predictor.predict(input);
-
-            var best = out.best();
-            Map<String, Double> probs = new LinkedHashMap<>();
-            out.items().forEach(i -> probs.put(i.getClassName(), i.getProbability()));
-
-            return new ModerationResult(best.getClassName(), best.getProbability(), probs);
+        } catch (Exception e) {
+            log.error("Failed to classify image: {}", e.getMessage(), e);
+            throw new RuntimeException("Image classification failed", e);
         }
     }
 
-    public ModerationResult classifyNative(MultipartFile file) throws Exception {
-        try (Predictor<NDList, Classifications> predictor = model.newPredictor()) {
+    public ClassificationResult classifyNative(MultipartFile file, int topK) throws Exception {
+        byte[] bytes = file.getBytes();
+        ByteBuffer encoded = ByteBuffer.allocateDirect(bytes.length);
+        encoded.put(bytes);
+        encoded.flip();
 
-            byte[] bytes = file.getBytes();
-            ByteBuffer encoded = ByteBuffer.allocateDirect(bytes.length);
-            encoded.put(bytes);
-            encoded.flip();
+//        ByteBuffer chw = NativeImageOps.preprocessToCHW(encoded, 224, 224,
+//                0.485f, 0.456f, 0.406f,
+//                0.229f, 0.224f, 0.225f);
 
-            NDManager manager = model.getNDManager();
+        ByteBuffer chw = NativeImageOps.preprocessToCHW(
+                encoded,          // encodedImage
+                224,              // outW
+                224,              // outH
+                0f, 0f, 0f,       // mean0, mean1, mean2  → 不减均值
+                1f, 1f, 1f        // std0, std1, std2    → 不除标准差
+        );
 
-            ByteBuffer chw = NativeImageOps.preprocessToCHW(encoded, 224, 224,
-                    0.485f, 0.456f, 0.406f,
-                    0.229f, 0.224f, 0.225f);
-            NDArray nd = manager.create(chw.asFloatBuffer(), new Shape(1, 3, 224, 224), DataType.FLOAT32);
+
+        try (NDManager manager = NDManager.newBaseManager()) {
+            NDArray nd = manager.create(chw.asFloatBuffer(), new Shape(3, 224, 224), DataType.FLOAT32);
+
+            log.info("NDArray min/max = " + nd.min().getFloat() + " ~ " + nd.max().getFloat());
+
             NativeImageOps.freeBuffer(chw);
-
-            NDList input = new NDList(nd);
-            Classifications out = predictor.predict(input);
-
-            Map<String, Double> probs = new LinkedHashMap<>();
-            out.topK(5).forEach(c -> probs.put(c.getClassName(), c.getProbability()));
-
-            var best = out.best();
-            return new ModerationResult(best.getClassName(), best.getProbability(), probs);
+            return modelService.classifyNDArray(nd, topK);
         }
     }
 
     @Async("aiTaskExecutor")
-    public CompletableFuture<ModerationResult> classifyAsync(MultipartFile file) throws Exception {
-        return CompletableFuture.completedFuture(classify(file));
+    public CompletableFuture<ClassificationResult> classifyAsync(MultipartFile file, int topK) throws Exception {
+        return CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return classify(file, topK);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                Executors.newCachedThreadPool());
     }
 }
 

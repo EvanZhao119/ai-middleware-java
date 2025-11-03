@@ -36,22 +36,19 @@ JNIEXPORT jobject JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHW
    jfloat mean0, jfloat mean1, jfloat mean2,
    jfloat std0,  jfloat std1,  jfloat std2)
 {
-    if (!encodedImage) {
-        return nullptr;
-    }
+    if (!encodedImage) return nullptr;
 
     auto* in_ptr = (unsigned char*) env->GetDirectBufferAddress(encodedImage);
     jlong in_len = env->GetDirectBufferCapacity(encodedImage);
-
-    if (!in_ptr || in_len <= 0) {
-        return nullptr;
-    }
+    if (!in_ptr || in_len <= 0) return nullptr;
 
     int w, h, c;
     unsigned char* hwc = stbi_load_from_memory(in_ptr, (int)in_len, &w, &h, &c, 3);
     if (!hwc) {
+        fprintf(stderr, "[JNI ERROR] stbi_load_from_memory failed\n");
         return nullptr;
     }
+    fprintf(stderr, "[JNI INFO] Loaded image %dx%d c=%d\n", w, h, c);
 
     const int short_target = 256;
     double scale = (w < h) ? (double)short_target / w : (double)short_target / h;
@@ -59,41 +56,29 @@ JNIEXPORT jobject JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHW
     int rh = (int)std::round(h * scale);
 
     unsigned char* resized256 = (unsigned char*) std::malloc((size_t)rw * rh * 3);
-    if (!resized256) {
-        stbi_image_free(hwc);
-        return nullptr;
-    }
-
-    int src_stride = w * 3 * sizeof(unsigned char);
-    int dst_stride = rw * 3 * sizeof(unsigned char);
+    if (!resized256) { stbi_image_free(hwc); return nullptr; }
 
     if (!stbir_resize_uint8_linear(
-            hwc, w, h, src_stride,
-            resized256, rw, rh, dst_stride,
+            hwc, w, h, w * 3,
+            resized256, rw, rh, rw * 3,
             STBIR_RGB))
     {
+        fprintf(stderr, "[JNI ERROR] resize failed\n");
         std::free(resized256);
         stbi_image_free(hwc);
         return nullptr;
     }
-
     stbi_image_free(hwc);
 
     unsigned char* cropped = (unsigned char*) std::malloc((size_t)outW * outH * 3);
-    if (!cropped) {
-        std::free(resized256);
-        return nullptr;
-    }
+    if (!cropped) { std::free(resized256); return nullptr; }
 
     center_crop_rgb_u8(resized256, rw, rh, cropped, outW, outH);
     std::free(resized256);
 
     size_t N = (size_t)outW * outH * 3;
     float* chw = (float*) std::malloc(N * sizeof(float));
-    if (!chw) {
-        std::free(cropped);
-        return nullptr;
-    }
+    if (!chw) { std::free(cropped); return nullptr; }
 
     const float mean[3] = {mean0, mean1, mean2};
     const float stdv[3] = {std0, std1, std2};
@@ -102,9 +87,9 @@ JNIEXPORT jobject JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHW
     for (int y = 0; y < outH; ++y) {
         for (int x = 0; x < outW; ++x) {
             int i = (y * outW + x) * 3;
-            float r = (cropped[i    ] / 255.0f - mean[0]) / stdv[0];
-            float g = (cropped[i + 1] / 255.0f - mean[1]) / stdv[1];
-            float b = (cropped[i + 2] / 255.0f - mean[2]) / stdv[2];
+            float r = (cropped[i]     / 255.0f - mean[0]) / (stdv[0] == 0 ? 1.0f : stdv[0]);
+            float g = (cropped[i + 1] / 255.0f - mean[1]) / (stdv[1] == 0 ? 1.0f : stdv[1]);
+            float b = (cropped[i + 2] / 255.0f - mean[2]) / (stdv[2] == 0 ? 1.0f : stdv[2]);
             int idx = y * outW + x;
             chw[idx]        = r;
             chw[idx + hw]   = g;
@@ -113,15 +98,15 @@ JNIEXPORT jobject JNICALL Java_org_estech_api_jni_NativeImageOps_preprocessToCHW
     }
     std::free(cropped);
 
+    // 调试输出前几个值
+    for (int i = 0; i < 10; ++i) printf("%f ", chw[i]);
+    printf("\n");
+
     jobject buffer = wrap_as_direct(env, chw, N * sizeof(float));
-
-    if (buffer == nullptr) {
-        std::free(chw);
-        return nullptr;
-    }
-
+    if (buffer == nullptr) { std::free(chw); return nullptr; }
     return buffer;
 }
+
 
 JNIEXPORT void JNICALL Java_org_estech_api_jni_NativeImageOps_freeBufferNative
   (JNIEnv* env, jclass, jobject buffer)
