@@ -1,16 +1,9 @@
 package org.estech.api.service;
 
-import ai.djl.inference.Predictor;
-import ai.djl.modality.Classifications;
 import ai.djl.ndarray.NDArray;
-import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
-import ai.djl.ndarray.types.DataType;
 import ai.djl.ndarray.types.Shape;
-import ai.djl.repository.zoo.ZooModel;
 import lombok.extern.slf4j.Slf4j;
-import org.estech.api.config.NsfwModelConfig;
-import org.estech.api.dto.ModerationResult;
 import org.estech.api.jni.NativeImageOps;
 import org.estech.common.dto.ClassificationResult;
 import org.estech.model.service.ModelService;
@@ -19,15 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.estech.common.constants.ModelConstants;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 

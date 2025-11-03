@@ -3,7 +3,6 @@ package org.estech.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.estech.api.dto.ModerationResult;
 import org.estech.api.service.ModerationService;
 import org.estech.common.dto.ClassificationResult;
 import org.springframework.http.MediaType;
