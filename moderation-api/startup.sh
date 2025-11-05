@@ -1,0 +1,1 @@
+nohup java -jar ./target/moderation-api-1.0-SNAPSHOT.jar &

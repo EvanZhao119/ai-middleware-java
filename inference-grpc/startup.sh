@@ -1,0 +1,1 @@
+nohup java -jar ./target/inference-grpc-1.0-SNAPSHOT.jar &
