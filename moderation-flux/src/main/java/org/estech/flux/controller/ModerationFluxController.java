@@ -8,6 +8,7 @@ import org.estech.common.dto.ClassificationResult;
 import org.estech.flux.service.ModerationFluxService;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.codec.multipart.FormFieldPart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -23,10 +24,14 @@ public class ModerationFluxController {
     @Timed(value = "model.inference.time", description = "Time taken for model inference")
     @PostMapping(value = "/classify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<ClassificationResult> classify(@RequestPart("file") FilePart file,
-                                               @RequestParam(name = "topK", required = false, defaultValue = "5") int topK) {
+                                               @RequestPart(value = "topK", required = false) Mono<FormFieldPart> topKPart) {
         long start = System.nanoTime();
 
-        return service.classify(file, topK)
+        return topKPart
+                .map(FormFieldPart::value)
+                .map(Integer::parseInt)
+                .defaultIfEmpty(5)
+                .flatMap(topK -> service.classify(file, topK))
                 .doOnSuccess(result -> meterRegistry.counter("model.inference.success").increment())
                 .doOnError(err -> meterRegistry.counter("model.inference.error").increment())
                 .doFinally(signal -> {

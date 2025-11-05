@@ -21,7 +21,7 @@ public class GrpcInferenceController {
     @PostMapping(value = "/predict", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ClassificationResult predict(
             @RequestPart("file") MultipartFile file,
-            @RequestParam(name = "topk", defaultValue = "5") int topk) throws Exception {
-        return grpcInferenceService.predict(file, topk);
+            @RequestParam(name = "topK", defaultValue = "5") int topK) throws Exception {
+        return grpcInferenceService.predict(file, topK);
     }
 }

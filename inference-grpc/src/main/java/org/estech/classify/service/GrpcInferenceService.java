@@ -19,8 +19,8 @@ public class GrpcInferenceService {
         this.grpcClient = grpcClient;
     }
 
-    public ClassificationResult predict(MultipartFile file, int topk) throws Exception {
-        PredictionResponse resp = grpcClient.predict(file, topk);
+    public ClassificationResult predict(MultipartFile file, int topK) throws Exception {
+        PredictionResponse resp = grpcClient.predict(file, topK);
         Map<String, Double> probs = new LinkedHashMap<>();
         for (Prediction p : resp.getTopkList()) {
             probs.put(p.getLabel(), (double)p.getProb());

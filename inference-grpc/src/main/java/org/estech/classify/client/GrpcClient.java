@@ -30,12 +30,12 @@ public class GrpcClient {
         this.blockingStub = ClassifierGrpc.newBlockingStub(channel);
     }
 
-    public PredictionResponse predict(MultipartFile file, int topk) throws IOException {
+    public PredictionResponse predict(MultipartFile file, int topK) throws IOException {
         byte[] data = file.getBytes();
 
         ImageRequest request = ImageRequest.newBuilder()
                 .setImage(com.google.protobuf.ByteString.copyFrom(data))
-                .setTopk(topk)
+                .setTopk(topK)
                 .build();
 
         PredictionResponse resp;
