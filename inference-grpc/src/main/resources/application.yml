@@ -12,5 +12,5 @@ spring:
 
 grpc:
   server:
-    host: localhost
+    host: 40.233.72.243
     port: 50051
