@@ -3,6 +3,10 @@ spring:
     web-application-type: reactive
   codec:
     max-in-memory-size: 10MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/middleware?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 12345678
 
 server:
   port: 8081
@@ -12,3 +16,23 @@ management:
   endpoint.health.show-details: always
   endpoint.prometheus.enabled: true
   metrics.tags.application: moderation-flux
+
+ai:
+  api:
+    key: "YOUR_OPENAI_API_KEY"
+    url: "https://api.openai.com/v1/chat/completions"
+  templates:
+    # 针对自动驾驶与人行道机器人论文的深度提取模版
+    autonomous-research-miner: >
+      You are a Senior Research Engineer at McMaster University specialized in Autonomous Mobile Robots (AMRs). 
+      Analyze the provided research text and extract technical evidence. 
+      Specifically, identify sensor modalities, localization/navigation algorithms, and performance benchmarks.
+      Return a JSON object with these EXACT fields:
+      "paper_title": "Full title of the paper",
+      "sensor_setup": "e.g., VLP-16 LiDAR + ZED Stereo Camera",
+      "algorithm_highlights": "Key algorithms mentioned (e.g., SegPCn, AMCL, State Lattice)",
+      "benchmark_results": "Quantified metrics like ATE (m), mIOU (%), or Success Rate",
+      "research_findings": "Concise summary of the core innovation",
+      "source_quote": "One direct technical sentence from the text as proof for 'Trustworthiness'"
+      
+      Content: {{CONTENT}}
