@@ -82,13 +82,13 @@ public class ResearchAIService {
     private ResearchEvidence getFallbackData() {
         ResearchEvidence mock = new ResearchEvidence();
         // 对应文献：A comparative experimental study of LiDAR, camera...
-        mock.setPaper_title("A comparative experimental study of LiDAR, camera, and LiDAR-camera localization");
-        mock.setSensor_setup("Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera");
-        mock.setAlgorithm_highlights("AMCL, Cartographer, RTAB-Map, ICP refinement");
-        mock.setBenchmark_results("LiDAR ATE: 0.03m; Visual Drift: >2m (in Pascal B trajectory)");
-        mock.setResearch_findings("Hybrid modality complements downsides of single sensors, maintaining accuracy during direction changes.");
+        mock.setPaperTitle("A comparative experimental study of LiDAR, camera, and LiDAR-camera localization");
+        mock.setSensorSetup("Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera");
+        mock.setAlgorithmHighlights("AMCL, Cartographer, RTAB-Map, ICP refinement");
+        mock.setBenchmarkResults("LiDAR ATE: 0.03m; Visual Drift: >2m (in Pascal B trajectory)");
+        mock.setResearchFindings("Hybrid modality complements downsides of single sensors, maintaining accuracy during direction changes.");
         // 强制引用的原文，展示系统严谨性
-        mock.setSource_quote("The proximity one-to-many hybrid modality achieves its design goal and manages to maintain the trajectory close to the ground truth.");
+        mock.setSourceQuote("The proximity one-to-many hybrid modality achieves its design goal and manages to maintain the trajectory close to the ground truth.");
         return mock;
     }
 
@@ -97,11 +97,11 @@ public class ResearchAIService {
         String sql = "INSERT INTO t_research_history (paper_url, paper_title, sensor_modality, key_metrics, evidence_summary, source_quote) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 url,
-                evidence.getPaper_title(),
-                evidence.getSensor_setup(),
-                evidence.getBenchmark_results(),
-                evidence.getResearch_findings(),
-                evidence.getSource_quote()
+                evidence.getPaperTitle(),
+                evidence.getSensorSetup(),
+                evidence.getBenchmarkResults(),
+                evidence.getResearchFindings(),
+                evidence.getSourceQuote()
         );
     }
 
