@@ -45,49 +45,54 @@ public class ResearchAIService {
 
     // 1. Ingestion: Get URL (Oracle Cloud) to analyze PDF
     public Mono<String> fetchAndParsePdf(String fileUrl) {
-        return webClient.get().uri(fileUrl)
-                .retrieve()
-                .bodyToMono(byte[].class)
-                .map(bytes -> {
-                    try (PDDocument doc = PDDocument.load(bytes)) {
-                        PDFTextStripper stripper = new PDFTextStripper();
-                        stripper.setEndPage(5);
-                        return stripper.getText(doc);
-                    } catch (IOException e) {
-                        log.error("PDF Parsing error", e);
-                        throw new RuntimeException("Failed to extract text from PDF");
-                    }
-                });
+        //暂时不调用chatgpt
+        return Mono.just("");
+//        return webClient.get().uri(fileUrl)
+//                .retrieve()
+//                .bodyToMono(byte[].class)
+//                .map(bytes -> {
+//                    try (PDDocument doc = PDDocument.load(bytes)) {
+//                        PDFTextStripper stripper = new PDFTextStripper();
+//                        stripper.setEndPage(5);
+//                        return stripper.getText(doc);
+//                    } catch (IOException e) {
+//                        log.error("PDF Parsing error", e);
+//                        throw new RuntimeException("Failed to extract text from PDF");
+//                    }
+//                });
     }
 
     // 2. Inference: invoke LLM
     public Mono<ResearchEvidence> extractIntelligence(String rawText) {
-        String finalPrompt = promptTemplate.replace("{{CONTENT}}", rawText);
-
-        Map<String, Object> body = Map.of(
-                "model", "gpt-4o",
-                "messages", List.of(Map.of("role", "user", "content", finalPrompt)),
-                "response_format", Map.of("type", "json_object")
-        );
-
-        return webClient.post()
-                .uri("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(node -> {
-                    String jsonStr = node.path("choices").get(0).path("message").path("content").asText();
-                    try {
-                        return mapper.readValue(jsonStr, ResearchEvidence.class);
-                    } catch (Exception e) {
-                        log.error("JSON mapping error", e);
-                        return getFallbackData();
-                    }
-                }).onErrorResume(e -> {
-                    log.warn("AI API request failed (Error: {}). Activating fallback mode with high-fidelity local research data for demonstration.", e.getMessage());
-                    return Mono.just(getFallbackData());
-                });
+        //暂时不调用chatgpt，返回默认值
+        getFallbackData();
+        return Mono.just(new ResearchEvidence());
+//        String finalPrompt = promptTemplate.replace("{{CONTENT}}", rawText);
+//
+//        Map<String, Object> body = Map.of(
+//                "model", "gpt-4o",
+//                "messages", List.of(Map.of("role", "user", "content", finalPrompt)),
+//                "response_format", Map.of("type", "json_object")
+//        );
+//
+//        return webClient.post()
+//                .uri("https://api.openai.com/v1/chat/completions")
+//                .header("Authorization", "Bearer " + apiKey)
+//                .bodyValue(body)
+//                .retrieve()
+//                .bodyToMono(JsonNode.class)
+//                .map(node -> {
+//                    String jsonStr = node.path("choices").get(0).path("message").path("content").asText();
+//                    try {
+//                        return mapper.readValue(jsonStr, ResearchEvidence.class);
+//                    } catch (Exception e) {
+//                        log.error("JSON mapping error", e);
+//                        return getFallbackData();
+//                    }
+//                }).onErrorResume(e -> {
+//                    log.warn("AI API request failed (Error: {}). Activating fallback mode with high-fidelity local research data for demonstration.", e.getMessage());
+//                    return Mono.just(getFallbackData());
+//                });
     }
 
     private ResearchEvidence getFallbackData() {
