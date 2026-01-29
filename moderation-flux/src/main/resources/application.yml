@@ -4,9 +4,10 @@ spring:
   codec:
     max-in-memory-size: 10MB
   datasource:
-    url: jdbc:mysql://localhost:3306/middleware?useSSL=false&serverTimezone=UTC
-    username: root
-    password: 12345678
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.ca-toronto-1.oraclecloud.com))(connect_data=(service_name=gb79ddce31ae3f6_ab69fw8uysbi8leq_medium.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
+    username: ADMIN
+    password: Study@hamilton0724
 
 server:
   port: 8081

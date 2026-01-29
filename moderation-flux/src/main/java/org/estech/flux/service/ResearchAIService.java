@@ -105,7 +105,7 @@ public class ResearchAIService {
 
     // 3. Persistence
     public void saveToHistory(String url, ResearchEvidence evidence) {
-        String sql = "INSERT INTO t_research_history (paper_url, paper_title, sensor_modality, key_metrics, evidence_summary, source_quote) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO FLUX_RESEARCH_HISTORY (PAPER_URL, PAPER_TITLE, SENSOR_MODALITY, KEY_METRICS, EVIDENCE_SUMMARY, SOURCE_QUOTE) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 url,
                 evidence.getPaperTitle(),
@@ -117,6 +117,6 @@ public class ResearchAIService {
     }
 
     public List<Map<String, Object>> getHistory() {
-        return jdbcTemplate.queryForList("SELECT * FROM t_research_history ORDER BY created_at DESC");
+        return jdbcTemplate.queryForList("SELECT * FROM FLUX_RESEARCH_HISTORY ORDER BY created_at DESC");
     }
 }
