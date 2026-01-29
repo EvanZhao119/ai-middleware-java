@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -26,8 +27,18 @@ public class ResearchAIService {
     @Value("${ai.templates.autonomous-research-miner}")
     private String promptTemplate;
 
-    private final WebClient webClient = WebClient.builder().build();
+    private final WebClient webClient;
     private final ObjectMapper mapper = new ObjectMapper();
+
+    public ResearchAIService() {
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(20 * 1024 * 1024))
+                .build();
+
+        this.webClient = WebClient.builder()
+                .exchangeStrategies(strategies)
+                .build();
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
