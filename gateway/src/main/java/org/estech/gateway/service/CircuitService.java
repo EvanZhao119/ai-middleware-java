@@ -57,7 +57,8 @@ public class CircuitService {
 
         RetryBackoffSpec reactorRetry = reactor.util.retry.Retry
                 .fixedDelay(maxAttempts, delay)
-                .filter(throwable -> true)
+                .filter(throwable -> !throwable.getMessage().contains("boundary") && !throwable.getMessage().contains("400") &&
+                        !throwable.getMessage().contains("4xx"))
                 .onRetryExhaustedThrow((spec, signal) -> signal.failure());
 
         return source

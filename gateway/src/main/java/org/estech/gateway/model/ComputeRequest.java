@@ -6,5 +6,6 @@ import lombok.Data;
 public class ComputeRequest {
     private String impl;   // service: flux/api/python
     private String path;   // path:/moderation/check
-    private String input;  // request body
+    private String method; // GET, POST, PUT, DELETE
+    private Object input;  // request body
 }

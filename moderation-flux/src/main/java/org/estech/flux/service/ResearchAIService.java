@@ -94,24 +94,24 @@ public class ResearchAIService {
         ResearchEvidence mock = new ResearchEvidence();
         // 对应文献：A comparative experimental study of LiDAR, camera...
         mock.setPaperTitle("A comparative experimental study of LiDAR, camera, and LiDAR-camera localization");
-        mock.setSensorSetup("Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera");
-        mock.setAlgorithmHighlights("AMCL, Cartographer, RTAB-Map, ICP refinement");
-        mock.setBenchmarkResults("LiDAR ATE: 0.03m; Visual Drift: >2m (in Pascal B trajectory)");
-        mock.setResearchFindings("Hybrid modality complements downsides of single sensors, maintaining accuracy during direction changes.");
-        // 强制引用的原文，展示系统严谨性
+        mock.setSensorModality("Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera");
+        mock.setEnvironmentContext("Urban Sidewalks, Mid-day, Clear Weather");
+        mock.setKeyMetrics("LiDAR ATE: 0.03m; Visual Drift: >2m");
+        mock.setEvidenceSummary("Hybrid modality complements downsides of single sensors, maintaining accuracy during direction changes.");
         mock.setSourceQuote("The proximity one-to-many hybrid modality achieves its design goal and manages to maintain the trajectory close to the ground truth.");
         return mock;
     }
 
     // 3. Persistence
     public void saveToHistory(String url, ResearchEvidence evidence) {
-        String sql = "INSERT INTO FLUX_RESEARCH_HISTORY (PAPER_URL, PAPER_TITLE, SENSOR_MODALITY, KEY_METRICS, EVIDENCE_SUMMARY, SOURCE_QUOTE) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO FLUX_RESEARCH_HISTORY (PAPER_URL, PAPER_TITLE, SENSOR_MODALITY, ENVIRONMENT_CONTEXT, KEY_METRICS, EVIDENCE_SUMMARY, SOURCE_QUOTE) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 url,
                 evidence.getPaperTitle(),
-                evidence.getSensorSetup(),
-                evidence.getBenchmarkResults(),
-                evidence.getResearchFindings(),
+                evidence.getSensorModality(),
+                evidence.getEnvironmentContext(),
+                evidence.getKeyMetrics(),
+                evidence.getEvidenceSummary(),
                 evidence.getSourceQuote()
         );
     }
