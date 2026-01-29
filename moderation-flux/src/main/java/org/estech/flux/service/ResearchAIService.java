@@ -65,8 +65,7 @@ public class ResearchAIService {
     // 2. Inference: invoke LLM
     public Mono<ResearchEvidence> extractIntelligence(String rawText) {
         //暂时不调用chatgpt，返回默认值
-        getFallbackData();
-        return Mono.just(new ResearchEvidence());
+        return Mono.just(getFallbackData());
 //        String finalPrompt = promptTemplate.replace("{{CONTENT}}", rawText);
 //
 //        Map<String, Object> body = Map.of(
