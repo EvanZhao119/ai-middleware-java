@@ -92,13 +92,12 @@ public class ResearchAIService {
 
     private ResearchEvidence getFallbackData() {
         ResearchEvidence mock = new ResearchEvidence();
-        // 对应文献：A comparative experimental study of LiDAR, camera...
-        mock.setPaperTitle("A comparative experimental study of LiDAR, camera, and LiDAR-camera localization");
-        mock.setSensorModality("Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera");
-        mock.setEnvironmentContext("Urban Sidewalks, Mid-day, Clear Weather");
-        mock.setKeyMetrics("LiDAR ATE: 0.03m; Visual Drift: >2m");
-        mock.setEvidenceSummary("Hybrid modality complements downsides of single sensors, maintaining accuracy during direction changes.");
-        mock.setSourceQuote("The proximity one-to-many hybrid modality achieves its design goal and manages to maintain the trajectory close to the ground truth.");
+        mock.setPaperTitle("A Review of Sensor Technologies for Perception in Automated Driving");
+        mock.setSensorModality("Exteroceptive sensors including Cameras (Mono, Stereo, NIR, FIR, ToF), FMCW Radar, and LiDAR (Mechanical and Solid State)");
+        mock.setEnvironmentContext("Automated driving in complex, dynamic environments under varying lighting and weather conditions (day, night, rain, fog, snow, dust).");
+        mock.setKeyMetrics("LiDAR accuracy averages a few millimeters error; Radar horizontal angular resolution of 2 to 5 degrees; Camera dynamic range up to 120-170 dB.");
+        mock.setEvidenceSummary("The review demonstrates that while individual sensors have specific failure modes—such as cameras struggling with high dynamic range scenes and LiDAR being affected by atmospheric scattering in fog—sensor fusion (e.g., Radar/LiDAR or Radar/Vision) effectively mitigates these gaps by combining long-range robustness with high-resolution spatial mapping.");
+        mock.setSourceQuote("Selection and arrangement of sensors represent a key factor in the design of the system.");
         return mock;
     }
 

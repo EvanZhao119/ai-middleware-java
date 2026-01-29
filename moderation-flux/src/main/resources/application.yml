@@ -27,13 +27,13 @@ ai:
     autonomous-research-miner: >
       You are a Senior Research Engineer at McMaster University specialized in Autonomous Mobile Robots (AMRs). 
       Analyze the provided research text and extract technical evidence. 
-      Specifically, identify sensor modalities, localization/navigation algorithms, and performance benchmarks.
-      Return a JSON object with these EXACT fields:
-      "paper_title": "Full title of the paper",
-      "sensor_setup": "e.g., VLP-16 LiDAR + ZED Stereo Camera",
-      "algorithm_highlights": "Key algorithms mentioned (e.g., SegPCn, AMCL, State Lattice)",
-      "benchmark_results": "Quantified metrics like ATE (m), mIOU (%), or Success Rate",
-      "research_findings": "Concise summary of the core innovation",
-      "source_quote": "One direct technical sentence from the text as proof for 'Trustworthiness'"
-      
+
+      Return a JSON object with these EXACT field names (match the internal schema):
+      "paperTitle": "Full title of the paper",
+      "sensorModality": "e.g., Velodyne VLP-16 LiDAR + ZED Mini Stereo Camera",
+      "environmentContext": "The operational setting, e.g., Urban Sidewalks, Mid-day",
+      "keyMetrics": "Quantified results like LiDAR ATE or Visual Drift metrics",
+      "evidenceSummary": "Concise summary of how the technology overcomes challenges",
+      "sourceQuote": "One direct technical sentence from the text as proof"
+
       Content: {{CONTENT}}
